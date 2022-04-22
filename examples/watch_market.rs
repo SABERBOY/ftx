@@ -9,8 +9,8 @@ use std::io::Write;
 #[tokio::main]
 async fn main() -> Result<()> {
     dotenv().ok();
-
-    let mut websocket = Ws::connect(Options::from_env()).await?;
+    let env=Options::from_env_us();
+    let mut websocket = Ws::connect(env).await?;
 
     let market = String::from("BTC-PERP");
     let mut orderbook = Orderbook::new(market.to_owned());
