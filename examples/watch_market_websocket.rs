@@ -1,9 +1,165 @@
 use dotenv::dotenv;
 use std::{fmt::Debug, *};
 
+fn for_each_planet<F>(f: F)
+where
+    F: Fn(&'static str) + 'static,
+{
+    f("Mercury");
+    f("Venus");
+    f("Earth");
+    f("Mars");
+    f("Jupiter");
+    f("Saturn");
+    f("Uranus");
+    f("Neptune");
+}
+
+fn foobar<F>(mut f: F)
+where
+    F: FnMut(i32) -> i32,
+{
+    // println!("{}", f(f(2)));
+    // println!("{}", f(2));
+    let tmp = f(2);
+    println!("{}", f(tmp));
+}
+
+fn foobar_once<F>(f: F)
+where
+    F: FnOnce() -> String,
+{
+    println!("{}", f());
+}
+
+fn foobar_two_args<F>(x: i32, y: i32, is_greater: F)
+where
+    F: Fn(i32, i32) -> bool,
+{
+    let (greater, smaller) = if is_greater(x, y) { (x, y) } else { (y, x) };
+    println!("{} is greater than {}", greater, smaller);
+}
+
+fn countdown<F>(count: usize, tick: F)
+where
+    F: Fn(usize),
+{
+    for i in (1..count).rev() {
+        tick(i);
+    }
+}
+
+fn make_tester(answer: String) -> impl Fn(&str) -> bool {
+    move |challenge| challenge == answer
+}
+
+fn make_tester1<'a>(answer: &'a str) -> impl Fn(&str) -> bool + 'a {
+    move |challenge| challenge == answer
+}
+
+fn make_tester2(answer: &str) -> impl Fn(&str) -> bool+'_ {
+    move |challenge| challenge == answer
+}
+
+
 #[tokio::main]
 async fn main() {
-    dotenv().ok();
+    let test = make_tester("hunter2".into());
+    println!("test {}", test("******"));
+    println!("test {}", test("hunter2"));
+
+    let test1 = make_tester1("hunter2");
+    println!("test1 {}", test1("******"));
+    println!("test1 {}", test1("hunter2"));
+    /* for c in "Hello, world!"
+        .chars()
+        .filter(|c| c.is_lowercase())
+        .flat_map(|c| c.to_uppercase())
+    {
+        println!("{}", c);
+    } */
+
+    /* for c in "rust".chars() {
+        println!("Give me a {}", c);
+    } */
+
+    /* for i in &[1, 2, 3] {
+        println!("{}", i);
+    } */
+
+    /* for i in vec![1, 2, 3, 4, 5] {
+        println!("{}", i);
+    }
+
+    for i in &vec![1, 2, 3, 4, 5] {
+        println!("{}", i);
+    } */
+
+    // countdown(1, |_| ());
+    // countdown(10, |i| println!("tick {}", i));
+
+    // foobar_two_args(32, 64, |x, y| x > y);
+    // foobar_two_args(32, 64, |_, _| panic!("should not be called"));
+
+    /* let s = String::from("alright");
+    foobar_once(|| s.clone());
+    foobar_once(|| s.clone()); */
+
+    /* let mut acc = 2;
+    foobar(|x| {
+        // acc = acc * x;
+        // acc
+        acc += 1;
+        x * acc
+    }); */
+
+    // for_each_planet(|planet| println!("Hello,{}", planet));
+    /* let greeting = String::from("Good to see you");
+    for_each_planet(move |planet| println!("{} {}", greeting, planet)); */
+}
+
+/* #[derive(Clone, Copy)]
+struct Point {
+    x: f64,
+    y: f64,
+}
+
+fn negate(p: Point) -> Point {
+    Point { x: -p.x, y: -p.y }
+}
+
+#[tokio::main]
+async fn main() {
+    let p = Point { x: 1.0, y: 2.0 };
+    let p_ref = &p;
+    // println!("{:?},{:?}", p_ref.x, p_ref.y);
+    negate(*p_ref);
+} */
+
+/* async fn main() -> Result<(), std::str::Utf8Error> {
+    let s = std::str::from_utf8(&[240, 159, 141, 137])?;
+    println!("{}", s);
+    /* match std::str::from_utf8(&[240, 159, 141, 137]) {
+        Ok(s) => println!("{}", s),
+        Err(e) => return Err(e),
+    } */
+    Ok(())
+    /* if let Ok(s) = std::str::from_utf8(&[240, 159, 141, 137]) {
+        println!("{}", s);
+    } */
+
+    /* let s = std::str::from_utf8(&[240, 159, 141, 137]).unwrap();
+    println!("{:?}", s);
+
+    match std::str::from_utf8(&[240, 159, 141, 137]) {
+        Ok(s) => println!("{:?}", s),
+        Err(e) => panic!("{:?}", e),
+    } */
+
+    // let s = std::str::from_utf8(&[195, 40]).unwrap();
+    // let s1 = std::str::from_utf8(&[195, 40]).expect("valid utf-8");
+
+    // dotenv().ok();
     /* println!("Hello, world!");
     let x={
         let mut x=1000;
@@ -76,10 +232,10 @@ async fn main() {
     print_number(p);
     print_number(p1);
     compare("left", "right"); */
-    use std::any::type_name;
+    /* use std::any::type_name;
     println!("{}", type_name::<i32>());
-    println!("{}", type_name::<(i64, char, str)>());
-}
+    println!("{}", type_name::<(i64, char, str)>()); */
+} */
 
 fn print_number(n: Number) {
     if let Number { value, odd: true } = n {
@@ -242,4 +398,49 @@ struct Number1 {
 
 fn number_value<'a>(n: &'a Number1) -> &'a i32 {
     &n.value
+}
+
+fn tail(s: &[u8]) -> &[u8] {
+    &s[1..]
+}
+
+fn tail_a<'a>(s: &'a [u8]) -> &'a [u8] {
+    &s[1..]
+}
+
+fn file_ext(name: &str) -> Option<&str> {
+    name.split(".").last()
+}
+
+#[tokio::test]
+async fn main_test3() {
+    let name1 = "Read me. Or don't.txt";
+    let ext = {
+        let name = String::from("hello.txt");
+        file_ext(&name).unwrap()
+    };
+    println!("{}", ext);
+
+    /*let name = "Read me. Or don't.txt";
+     if let Some(ext) = file_ext(name) {
+        println!("file extension:{}", ext);
+    } else {
+        println!("no extension");
+    } */
+
+    /* let v = vec![1, 2, 3, 4, 5];
+    let v2 = &v[2..4];
+    println!("{:?}", v2);
+    let v3 = &v[0..1];
+    println!("{:?}", v3);
+    println!("{:?}", (0..));
+    println!("{:?}", (1000..1500).contains(&1500)); */
+    /* let x = &[1, 2, 3, 4, 5];
+    let y = tail(x);
+    println!("{:?}", y); */
+    /* let y = {
+        let x = vec![1, 2, 3, 4, 5];
+        tail_a(&x)
+    };
+    println!("{:?}", y); */
 }
