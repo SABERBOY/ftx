@@ -57,10 +57,9 @@ fn make_tester1<'a>(answer: &'a str) -> impl Fn(&str) -> bool + 'a {
     move |challenge| challenge == answer
 }
 
-fn make_tester2(answer: &str) -> impl Fn(&str) -> bool+'_ {
+fn make_tester2(answer: &str) -> impl Fn(&str) -> bool + '_ {
     move |challenge| challenge == answer
 }
-
 
 #[tokio::main]
 async fn main() {
@@ -414,12 +413,12 @@ fn file_ext(name: &str) -> Option<&str> {
 
 #[tokio::test]
 async fn main_test3() {
-    let name1 = "Read me. Or don't.txt";
+    /* let name1 = "Read me. Or don't.txt";
     let ext = {
         let name = String::from("hello.txt");
         file_ext(&name).unwrap()
     };
-    println!("{}", ext);
+    println!("{}", ext); */
 
     /*let name = "Read me. Or don't.txt";
      if let Some(ext) = file_ext(name) {
@@ -443,4 +442,10 @@ async fn main_test3() {
         tail_a(&x)
     };
     println!("{:?}", y); */
+}
+#[tokio::test]
+async fn main_test33() {
+    let v = vec![1, 2, 3, 4, 5];
+    let v2 = &v[2];
+    println!("{:?}", v2);
 }
